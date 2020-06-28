@@ -1,0 +1,160 @@
+---
+title: "複習篇"ge
+author: "niiiiina"
+date: "2020/6/26"
+output: html_document
+---
+###5.2 Function
+
+```{r}
+demand <- 
+  function(p){
+    qd <- 10-5*p
+  }
+
+demand(p=1)
+```
+
+
+```{r}
+demand_return <- 
+  function(p){
+    qd <- 10-5*p
+    return(qd)
+  }
+
+demand_return(1)
+
+```
+
+```{r}
+.Last.value
+```
+
+```{r}
+# 若函數執行需要Global environment已存在某些物件，查詢需要哪些物件
+codetools::findGlobals(demand_return)
+```
+
+```{r}
+intercept <- 10
+slope <- -5
+myDemand <- function(p){
+  q_d <- intercept + slope*p
+  return(q_d)
+}
+```
+
+```{r}
+environment(demand_return)
+environment(myDemand)
+```
+
+
+```{r}
+codetools::findGlobals(demand_return)
+codetools::findGlobals(myDemand) 
+
+# myDemand對Global environment的要求多了intercept及slope
+```
+
+```{r}
+myDemand1 <- function(p, intercept = 10, slope = -5){
+  q_d <- intercept + slope*p
+  return(q_d)
+}
+
+codetools::findGlobals(myDemand1)
+```
+
+```{r}
+# 移除global environment裡的intercept及slope
+rm(intercept, slope)
+
+demand_return(1.2)# 正常運作
+myDemand(1.2)# 無法正常運作
+#要運作才去呼叫值得特性叫做「惰性求值」
+myDemand1(1.2)# 正常運作
+#可以隨時改值，然而在沒有特別更改時就使用原設定
+```
+
+###5.3
+
+```{r}
+readline(prompt = "請輸入你的學號") -> studentID
+
+if(stringr::str_detect(studentID, "^[43](1[01][0-9]|9[0-9])[0-9]{5}$", negate = T)){
+  warning("wrong")
+}
+```
+
+#如果使用者沒有安裝套件
+
+```{r}
+if(!require(lubridate)){
+  install.packages("lubridate")
+}
+
+#相當於
+lubridate::ymd_hms("2020-07-01 13:00:00 GWT")
+```
+
+不重複下載
+
+```{r}
+# 檢視步驟耗時elapse time
+system.time(
+  jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") ->
+  weather_next36hours
+)
+```
+
+```{r}
+if(!exists("weather_next36hours")){
+  jsonlite::fromJSON("https://opendata.cwb.gov.tw/fileapi/v1/opendataapi/F-C0032-001?Authorization=rdec-key-123-45678-011121314&format=JSON") -> weather_next36hours
+  SOAR::Store(weather_next36hours)# 存在.R_cache environment中
+}
+```
+
+####5.3.2 if else
+
+```{r}
+n <- 54
+if((n%%2  == 1)){
+  fvalue <- -(n+1)/2
+}else{
+  fvalue <- n/2
+}
+print(fvalue)
+```
+
+```{r}
+myfun <- function(n){
+  if((n%%2 == 1)){
+    fvalue <- -(n+1)/2
+  }else{
+    fvalue <- n/2
+  }
+  return(fvalue)
+}
+
+myfun(54)
+```
+
+```{r}
+n <- 5
+as.logical(n%%2)
+
+myfun1 <- function(n){
+  if(as.logical(n%%2)){
+    fvalue <- -(n+1)/2
+  }else{
+    fvalue <- n/2
+  }
+  return(fvalue)
+}
+
+myfun1(4)
+myfun1(33)
+```
+
